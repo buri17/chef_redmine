@@ -119,7 +119,7 @@ template "/etc/init.d/unicorn_redmine" do
   source "unicorn_init_script.erb"
   owner  "root"
   group  "root"
-  mode   "0700"
+  mode   "0755" # fixed permissions
 end
 
 # Redmine configuration for SCM and mailing
@@ -144,7 +144,7 @@ template "#{node['redmine']['app_path']}/config/database.yml" do
   source "database.yml.erb"
   owner "www-data"
   group "www-data"
-  mode  "0644"
+  mode  "0600" #FIXME: are these correct?
 end
 
 # fix ownership for public/plugin_assets due to deployment order
@@ -172,6 +172,7 @@ end
 
 # Nginx configuration
 template "/etc/nginx/sites-available/redmine.conf" do
+  mode "0644"
   source "redmine.conf.erb"
 end
 
