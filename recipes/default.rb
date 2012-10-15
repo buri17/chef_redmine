@@ -100,10 +100,13 @@ template "#{node['redmine']['app_path']}/.rvmrc" do
   source ".rvmrc.erb"
   owner "www-data"
   group "www-data"
+  mode "0755" # This was missing, probably
 end
 
-# Custom force-trust for .rvmrc
+# Custom force-trust for redmine.app_path/.rvmrc
 script "trust_rvmrc" do 
+  # FIXME: this silently fails unless .rvmrc is 755
+  ## error on `cd /opt/redmine`:  Do you wish to trust this .rvmrc file? (/opt/redmine/.rvmrc)
   interpreter "bash"
   code <<-EOF
   source /etc/profile
