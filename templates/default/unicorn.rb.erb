@@ -8,6 +8,9 @@ timeout 30
 
 listen "<%= "#{node['redmine']['app_path']}#{node['redmine']['unicorn_conf']['sock']}" %>", :backlog => 64
 
+# helpful for debugging
+listen 9090, :tcp_nopush => true
+
 pid "<%= "#{node['redmine']['app_path']}#{node['redmine']['unicorn_conf']['pid']}" %>"
 
 stderr_path "<%= "#{node['redmine']['app_path']}#{node['redmine']['unicorn_conf']['error_log']}" %>"
