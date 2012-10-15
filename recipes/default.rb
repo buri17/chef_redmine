@@ -105,23 +105,6 @@ directory "#{node['redmine']['app_path']}/public/plugin_assets" do
   mode  "0755"
 end
 
-# http://www.redmine.org/projects/redmine/wiki/RedmineInstall step 4
-rvm_shell "rake_task:generate_session_store" do
-  ruby_string node['redmine']['ruby']
-  cwd node['redmine']['app_path']
-  code "rake generate_session_store"
-end
-
-# http://www.redmine.org/projects/redmine/wiki/RedmineInstall step 5 - migrating DB 
-rvm_shell "rake_task:db:migrate RAILS_ENV=production" do
-  ruby_string node['redmine']['ruby']
-  cwd node['redmine']['app_path']
-  code "rake db:migrate RAILS_ENV=production"
-
-  # not_if takes a block, not a boolean
-  not_if {node['redmine']['db'].any?{|key, value| value == ""}}
-end
-
 # Nginx configuration
 template "/etc/nginx/sites-available/redmine.conf" do
   mode "0644"
@@ -135,7 +118,3 @@ link "/etc/nginx/sites-enabled/redmine.conf" do
   only_if { node['nginx'] }
 end
 
-# Start unicorn (notifies doesnt seem to work)
-service "unicorn_redmine" do
-  action :start
-end
