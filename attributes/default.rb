@@ -18,6 +18,5 @@ default['redmine'] = {
   'ruby' => "ruby-1.8.7-p330@redmine",
   'rmagick' => "disabled",
   'nginx_filenames' => ["redmine.conf"],
-  'nginx_listen' => ["#{node['ipaddress']}:80"]
-  # 'nginx_listen' => ["*:80 default"]
+  'nginx_listen' => ["*:80 default_server"]
 }
