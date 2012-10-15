@@ -120,6 +120,9 @@ template "/etc/init.d/unicorn_redmine" do
   owner  "root"
   group  "root"
   mode   "0755" # fixed permissions
+
+  # see http://stackoverflow.com/questions/9938314/chef-how-to-run-a-template-that-creates-a-init-d-script-before-the-service-is-c/9941971#9941971
+  notifies :enable, resources(:service => "unicorn_redmine")
 end
 
 # Redmine configuration for SCM and mailing
@@ -166,7 +169,6 @@ rvm_shell "rake_task:db:migrate RAILS_ENV=production" do
   ruby_string node['redmine']['ruby']
   cwd node['redmine']['app_path']
   code "rake db:migrate RAILS_ENV=production"
-  notifies [:enable, :start], resources(:service => "unicorn_redmine")
 
   # not_if takes a block, not a boolean
   not_if {node['redmine']['db'].any?{|key, value| value == ""}}
@@ -183,4 +185,9 @@ link "/etc/nginx/sites-enabled/redmine.conf" do
   to "/etc/nginx/sites-available/redmine.conf"
   notifies :reload, resources(:service => "nginx")
   only_if { node['nginx'] }
+end
+
+# Start unicorn (notifies doesnt seem to work)
+service "unicorn_redmine" do
+  action :start
 end
