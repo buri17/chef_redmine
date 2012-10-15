@@ -1,6 +1,7 @@
 default['redmine'] = {
   'release_tag' => "1.3.1",
   'app_path' => "/opt/redmine/",
+  'app_server_name' => 'redmine',
   'unicorn_conf' => {
     'pid' => "/tmp/pids/unicorn.pid", 
     'sock' => "/tmp/sockets/unicorn.sock",
@@ -9,22 +10,14 @@ default['redmine'] = {
     },
   'db' => {
     'type' => "mysql",
-    'db_name' => "",
-    'db_host' => "",
-    'db_user' => "",
+    'db_host' => "localhost",
+    'db_user' => "root",
+    'db_name' => "redmine_production",
     'db_pass' => ""
   },
   'ruby' => "ruby-1.8.7-p330@redmine",
   'rmagick' => "disabled",
   'nginx_filenames' => ["redmine.conf"],
   'nginx_listen' => ["#{node['ipaddress']}:80"]
-}
-
-set_unless['redmine']['app_server_name'] = "redmine.#{node['fqdn']}"
-set_unless['redmine']['db'] = {
-  'type' => "mysql",
-  'db_name' => "",
-  'db_host' => "",
-  'db_user' => "",
-  'db_pass' => ""
+  # 'nginx_listen' => ["*:80 default"]
 }
