@@ -167,7 +167,9 @@ rvm_shell "rake_task:db:migrate RAILS_ENV=production" do
   cwd node['redmine']['app_path']
   code "rake db:migrate RAILS_ENV=production"
   notifies [:enable, :start], resources(:service => "unicorn_redmine")
-  not_if node['redmine']['db'].any?{|key, value| value == ""}
+
+  # not_if takes a block, not a boolean
+  not_if {node['redmine']['db'].any?{|key, value| value == ""}}
 end
 
 # Nginx configuration
@@ -180,5 +182,5 @@ end
 link "/etc/nginx/sites-enabled/redmine.conf" do
   to "/etc/nginx/sites-available/redmine.conf"
   notifies :reload, resources(:service => "nginx")
-  only_if node['nginx']
+  only_if { node['nginx'] }
 end
