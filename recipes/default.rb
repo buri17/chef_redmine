@@ -176,11 +176,6 @@ template "/etc/nginx/sites-available/redmine.conf" do
   source "redmine.conf.erb"
 end
 
-# linking app_path to default virtual-hosts location
-link "/var/www/virtual-hosts/redmine" do
-  to node['redmine']['app_path']
-end
-
 # In case of nginx recipe usage - reload nginx after linking available to enabled
 link "/etc/nginx/sites-enabled/redmine.conf" do
   to "/etc/nginx/sites-available/redmine.conf"
