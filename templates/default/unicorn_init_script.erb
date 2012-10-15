@@ -45,6 +45,11 @@ oldsig() {
 case ${1-help} in
     status)
         sig 0 && echo "[Unicorn @ Redmine] running in $APP_ROOT pid `cat $PID` " && exit 0
+
+        #FIXME: The exit code for status is wrong; should be 3 if not running.
+        # probably other exit codes are bogus too.
+        # see http://refspecs.linuxbase.org/LSB_3.1.1/LSB-Core-generic/LSB-Core-generic/iniscrptact.html
+        # see https://gist.github.com/2814835
         echo "[Unicorn @ Redmine] stopped" && exit 0
     ;;
     start)

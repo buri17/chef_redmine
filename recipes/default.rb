@@ -72,10 +72,10 @@ case node['redmine']['db']['type']
     package "libpq-dev"
 end
 
-
-# Unnicorn for redmine service definition
+# definition of /etc/init.d/unicorn_redmine
 service "unicorn_redmine" do
-  supports :restart => true, :reload => true
+  # required because the init script error codes are wrong
+  supports :status => false
   action :nothing
 end
 
