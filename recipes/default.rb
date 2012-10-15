@@ -18,14 +18,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+
+# Installing rvm 1.8.7 ruby and creating gemset
+rvm_environment node['redmine']['ruby']
+
 # Defining requirements
 REQUIRED_GEMS = {
   "rake"    => "0.8.7",
   "rails"   => "2.3.14",
   "rack"    => "1.1.3",
   "unicorn" => nil,
-  "rubytree" => "0.5.2" 
+  "rubytree" => "0.5.2"
   }
+
+# Array iteration is necessary since Ruby 1.8.7 Hash.each does not preserve
+# insertion order, which was ['unicorn','rack','rake','rails','rubytree'].
+# That order caused rack 1.4.1 to be installed as a dependency for unicorn,
+# which conflicted with rails 2.3.14 even though rack 1.1.3 was also installed.
+REQUIRED_GEMS_ORDERED = [ 'rake', 'rails', 'rack', 'rubytree', 'unicorn']
+
+# Installing gems for rvm environment
+REQUIRED_GEMS_ORDERED.each do |gem|
+  version = REQUIRED_GEMS[gem]
+  rvm_gem gem do
+    ruby_string node['redmine']['ruby']
+    version version if version
+  end
+end
 
 # Optional prerequisites for RMagick
 if node['redmine']['rmagick'] == "enabled"
@@ -35,8 +55,6 @@ if node['redmine']['rmagick'] == "enabled"
   end
 end
 
-# Using https://github.com/fnichol/chef-rvm rvm::system_install
-include_recipe 'rvm::system_install'
 
 # Automatically select and install prerequisites for db support
 # according to attributes. Defaults to mysql
@@ -75,17 +93,6 @@ git node['redmine']['app_path'] do
   group 'www-data'
   repository "https://github.com/redmine/redmine"
   revision node['redmine']['release_tag']
-end
-
-# Installing rvm 1.8.7 ruby and creating gemset
-rvm_environment node['redmine']['ruby']
-
-# Installing gems for rvm environment
-REQUIRED_GEMS.each do |gem, version|
-  rvm_gem gem do
-    ruby_string node['redmine']['ruby']
-    version version if version
-  end
 end
 
 # Deploying rvm env autoswitcher to app_path
