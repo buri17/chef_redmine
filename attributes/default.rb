@@ -10,11 +10,11 @@ default['redmine'] = {
     'access_log' => "unicorn.access.log"
     },
   'db' => {
-    'type' => "mysql",
     'db_host' => "localhost",
-    'db_user' => "root",
+    'db_user' => "redmine",
     'db_name' => "redmine_production",
-    'db_pass' => ""
+    'db_pass' => "!redMine",
+    'load_sql_file' => nil
   },
   'ruby' => "ruby-1.8.7-p330@redmine",
   'rmagick' => "disabled",

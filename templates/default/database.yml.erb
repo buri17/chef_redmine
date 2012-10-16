@@ -1,10 +1,8 @@
+# This file is managed by Chef recipe[redmine::database]
+
 production:
-<% case node['redmine']['db']['type'] when "mysql" %>
   adapter: mysql
   encoding: utf8
-<% when "postgresql" %>
-  adapter: postgresql
-<% end %>
   database: <%= node['redmine']['db']['db_name'] %>
   host:     <%= node['redmine']['db']['db_host'] %>
   username: <%= node['redmine']['db']['db_user'] %>
