@@ -20,7 +20,8 @@
 # limitations under the License.
 #
 
+# Install rvm
 include_recipe "rvm::system_install"
 
-# Installing rvm 1.8.7 ruby and creating gemset
+# Installing 1.8.7 ruby and creating gemset
 rvm_environment node['redmine']['ruby']
