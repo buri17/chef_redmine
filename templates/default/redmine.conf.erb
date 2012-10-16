@@ -12,6 +12,14 @@ server {
   }
   
   location @redmine {
+    #otherwise we have redirection errors on first page load
+    # eg http://localhost:8080 -> 302 http://localhost
+    # see http://recipes.sinatrarb.com/p/deployment/nginx_proxied_to_unicorn
+    # see http://stackoverflow.com/questions/5834025/how-to-preserve-request-url-with-nginx-proxy-pass
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $http_host;
+    proxy_redirect off;
+    # pass to the upstream unicorn server mentioned above
     proxy_pass http://redmine ;
   }
 }
