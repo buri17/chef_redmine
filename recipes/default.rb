@@ -110,10 +110,11 @@ template "#{node['redmine']['app_path']}/Gemfile" do
   mode "0755"
 end
 
-rvm_shell "bundle update" do
+# Run 'bundle install' to install gems based on Gemfile
+rvm_shell "bundle install" do
   ruby_string node['redmine']['ruby']
   cwd node['redmine']['app_path']
-  code "bundle update"
+  code "bundle install"
 end
 
 # Nginx configuration
