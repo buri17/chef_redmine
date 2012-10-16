@@ -1,5 +1,6 @@
 default['redmine'] = {
-  'release_tag' => "1.3.1",
+  'git_revision' => "1.3.1",
+  'git_repository' => "https://github.com/redmine/redmine",
   'app_path' => "/opt/redmine/",
   'app_server_name' => 'redmine',
   'unicorn_conf' => {
