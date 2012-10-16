@@ -112,3 +112,7 @@ link "/etc/nginx/sites-enabled/redmine.conf" do
   only_if { node['nginx'] }
 end
 
+link "/etc/nginx/sites-enabled/default" do
+  action :delete
+  notifies :reload, resources(:service => "nginx")
+end
