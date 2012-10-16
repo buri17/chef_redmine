@@ -99,6 +99,21 @@ directory "#{node['redmine']['app_path']}/public/plugin_assets" do
   mode  "0755"
 end
 
+# Install a redmine-specific Gemfile
+template "#{node['redmine']['app_path']}/Gemfile" do
+  action :create_if_missing
+  source "Gemfile.erb"
+  owner "www-data"
+  group "www-data"
+  mode "0755"
+end
+
+rvm_shell "bundle update" do
+  ruby_string node['redmine']['ruby']
+  cwd node['redmine']['app_path']
+  code "bundle update"
+end
+
 # Nginx configuration
 template "/etc/nginx/sites-available/redmine.conf" do
   mode "0644"
