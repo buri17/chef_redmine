@@ -34,16 +34,18 @@ directory node['redmine']['app_path'] do
   group "www-data"
 end
 
-# Exporting defined redmine version from git mirror https://github.com/redmine/redmine
+# Checkout redmine codebase from specified git repo
+# Note: running git deploy as non-root user will break SSH agent forwarding
 git node['redmine']['app_path'] do
   action :checkout
-  # TODO: running as non-root user will break SSH agent forwarding
-  user 'www-data'
-  group 'www-data'
-  # shallow_clone true
   enable_submodules true
   repository node['redmine']['git_repository']
   revision node['redmine']['git_revision']
+end
+
+# Sets ownership of redmine codebase to www-data
+bash "fix redmine perms" do
+  code "chown -R www-data:www-data #{node['redmine']['app_path']}"
 end
 
 # Deploying rvm env autoswitcher to app_path
