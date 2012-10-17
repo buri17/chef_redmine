@@ -1,6 +1,3 @@
-#TODO:
-# 1. init.d scripts for unicorn_rails service
-# 2. [rvm] Prefer user installation over system-wide
 # Cookbook Name:: redmine
 # Recipe:: default
 #
@@ -18,7 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 
 # definition of /etc/init.d/unicorn_redmine
 service "unicorn_redmine" do
@@ -115,22 +111,4 @@ rvm_shell "bundle install" do
   ruby_string node['redmine']['ruby']
   cwd node['redmine']['app_path']
   code "bundle install"
-end
-
-# Nginx configuration
-template "/etc/nginx/sites-available/redmine.conf" do
-  mode "0644"
-  source "redmine.conf.erb"
-end
-
-# In case of nginx recipe usage - reload nginx after linking available to enabled
-link "/etc/nginx/sites-enabled/redmine.conf" do
-  to "/etc/nginx/sites-available/redmine.conf"
-  notifies :reload, resources(:service => "nginx")
-  only_if { node['nginx'] }
-end
-
-link "/etc/nginx/sites-enabled/default" do
-  action :delete
-  notifies :reload, resources(:service => "nginx")
 end
