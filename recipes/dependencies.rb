@@ -1,7 +1,3 @@
-#TODO:
-# 1. init.d scripts for unicorn_rails service
-# 2. [rvm] Prefer user installation over system-wide
-
 # Cookbook Name:: redmine
 # Recipe:: dependencies
 #
