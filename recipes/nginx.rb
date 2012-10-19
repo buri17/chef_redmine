@@ -16,19 +16,22 @@
 # limitations under the License.
 #
 
-# Nginx configuration
+# Install nginx (note: might require apt-get update)
+include_recipe "nginx"
+
+# Install redmine vhost
 template "/etc/nginx/sites-available/redmine.conf" do
   mode "0644"
   source "redmine.conf.erb"
 end
 
-# In case of nginx recipe usage - reload nginx after linking available to enabled
+# Enable redmine vhost
 link "/etc/nginx/sites-enabled/redmine.conf" do
   to "/etc/nginx/sites-available/redmine.conf"
   notifies :reload, resources(:service => "nginx")
-  only_if { node['nginx'] }
 end
 
+# Disable default vhost (allows redmine vhost to serve http://localhost)
 link "/etc/nginx/sites-enabled/default" do
   action :delete
   notifies :reload, resources(:service => "nginx")
