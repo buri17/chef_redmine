@@ -1,7 +1,3 @@
-#TODO:
-# 1. init.d scripts for unicorn_rails service
-# 2. [rvm] Prefer user installation over system-wide
-
 # Cookbook Name:: redmine
 # Recipe:: database
 #
@@ -52,7 +48,6 @@ mysql_database_user node['redmine']['db']['db_user'] do
 end
 
 # Redmine database configuration
-# TODO: postgresql
 template "#{node['redmine']['app_path']}/config/database.yml" do
   source "database.yml.erb"
   owner "www-data"
@@ -65,41 +60,55 @@ rvm_shell "rake_task:generate_session_store" do
   ruby_string node['redmine']['ruby']
   cwd node['redmine']['app_path']
 
-  #NOTE: for redmine 2.x it should be `rake generate_secret_token`
-  # http://www.redmine.org/projects/redmine/wiki/RedmineInstall#Ruby-38-Ruby-on-Rails-38-Rack
+  #TODO: for redmine 2.x it should be `rake generate_secret_token`
+  # see lib/tasks/initializers.rake
   code "rake generate_session_store"
 end
 
-# http://www.redmine.org/projects/redmine/wiki/RedmineInstall step 6 - migrating DB 
-# creates default super-user 'admin' with password 'admin'
-rvm_shell "rake_task:db:migrate" do
-  ruby_string node['redmine']['ruby']
-  cwd node['redmine']['app_path']
-  code "rake db:migrate RAILS_ENV=production"
-end
+# expression to check if DB is empty. We assume that if the settings table exists, nonempty.
 
-# http://www.redmine.org/projects/redmine/wiki/RedmineInstall step 7 - default roles, trackers
-rvm_shell "rake_task:redmine:load_default_data" do
-  ruby_string node['redmine']['ruby']
-  cwd node['redmine']['app_path']
+db_user = node['redmine']['db']['db_user']
+db_pass = node['redmine']['db']['db_pass']
+db_name = node['redmine']['db']['db_name']
+mysql_client_cmd = "mysql -u #{db_user} -p#{db_pass} #{db_name}"
+mysql_empty_check_cmd = "echo 'SHOW TABLES' | #{mysql_client_cmd} | wc -l | xargs test 0 -eq"
 
-  # see http://www.redmine.org/issues/2847 for REDMINE_LANG info
-  code "rake redmine:load_default_data REDMINE_LANG=en RAILS_ENV=production"
-end
-
-# if requested in redmine['db']['load_sql_file'], load database from file
+# if requested in redmine['db']['load_sql_file'], load database from SQL
 bash "load redmine database dump" do
-  # x = {
-  #   'db_user' => "redmine",
-  #   'db_pass' => "redmineDbPass",
-  #   'load_sql_file' => "/vagrant/redmine_prod.sql",
-  #   'db_name' => "redmine_prod"
-  # }
-  x = node['redmine']['db']
-  code "cat #{x['load_sql_file']} | mysql -u #{x['db_user']} -p#{x['db_pass']} #{x['db_name']} "
-  only_if do
-   x['load_sql_file'] && File.exists?(x['load_sql_file'])
-  end
+  load_sql_file = node['redmine']['db']['load_sql_file']
+
+  code "cat #{load_sql_file} | #{mysql_client_cmd}"
+  # Note: quotes are important since load_sql_file might be nil
+  only_if "test -f '#{load_sql_file}' && #{mysql_empty_check_cmd}"
+end
+
+# http://www.redmine.org/projects/redmine/wiki/RedmineInstall step 6 - migrating DB 
+# run plugin migrations, http://www.redmine.org/projects/redmine/wiki/Plugins
+# http://www.redmine.org/projects/redmine/wiki/RedmineInstall step 7 - default roles, trackers
+# creates default super-user 'admin' with password 'admin'
+rvm_shell "rake_task: db:migrate and other initialization" do
+
+  rm_1x_file = "#{node['redmine']['app_path']}/lib/tasks/migrate_plugins.rake" 
+  plugin_rake_task = File.exists?(rm_1x_file) ? "db:migrate:plugins" : "redmine:plugins:migrate"
+
+  ruby_string node['redmine']['ruby']
+  cwd node['redmine']['app_path']
+  code <<-EOH
+    rake db:migrate RAILS_ENV=production
+    rake #{plugin_rake_task} RAILS_ENV=production
+    rake redmine:load_default_data REDMINE_LANG=en RAILS_ENV=production
+  EOH
+
+  only_if "#{mysql_empty_check_cmd}"
+end
+
+# (Re-)generates db/schema.rb, which should have been created by db:migrate.
+# Only necessary if DB was loaded from SQL file, or after db:migrate:plugins due to bug
+# See http://www.redmine.org/issues/11299
+rvm_shell "rake_task:db:schema:dump" do
+  ruby_string node['redmine']['ruby']
+  cwd node['redmine']['app_path']
+  code "rake db:schema:dump RAILS_ENV=production"
 end
 
 # Start unicorn (notifies doesnt seem to work)
