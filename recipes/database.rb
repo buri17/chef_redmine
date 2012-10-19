@@ -77,7 +77,8 @@ mysql_empty_check_cmd = "echo 'SHOW TABLES' | #{mysql_client_cmd} | wc -l | xarg
 bash "load redmine database dump" do
   load_sql_file = node['redmine']['db']['load_sql_file']
 
-  code "cat #{load_sql_file} | #{mysql_client_cmd}"
+  # 'zless FILE | CMD' is equivalent to 'zcat FILE | CMD' but supports plain-text FILEs
+  code "zless #{load_sql_file} | #{mysql_client_cmd}"
   # Note: quotes are important since load_sql_file might be nil
   only_if "test -f '#{load_sql_file}' && #{mysql_empty_check_cmd}"
 end
