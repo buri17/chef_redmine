@@ -17,6 +17,7 @@
 #
 
 # see https://github.com/opscode-cookbooks/mysql#usage
+include_recipe "mysql::server"
 include_recipe "mysql::ruby"
 
 mysql_root_connection_info = {
