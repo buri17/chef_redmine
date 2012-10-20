@@ -64,6 +64,8 @@ rvm_shell "rake_task:generate_session_store" do
   #TODO: for redmine 2.x it should be `rake generate_secret_token`
   # see lib/tasks/initializers.rake
   code "rake generate_session_store"
+  user "www-data"
+  group "www-data"
 end
 
 # expression to check if DB is empty. We assume that if the settings table exists, nonempty.
@@ -95,6 +97,9 @@ rvm_shell "rake_task: db:migrate and other initialization" do
 
   ruby_string node['redmine']['ruby']
   cwd node['redmine']['app_path']
+  user "www-data"
+  group "www-data"
+
   code <<-EOH
     rake db:migrate RAILS_ENV=production
     rake #{plugin_rake_task} RAILS_ENV=production
@@ -108,9 +113,13 @@ end
 # Only necessary if DB was loaded from SQL file, or after db:migrate:plugins due to bug
 # See http://www.redmine.org/issues/11299
 rvm_shell "rake_task:db:schema:dump" do
+  code "rake db:schema:dump RAILS_ENV=production"
+
   ruby_string node['redmine']['ruby']
   cwd node['redmine']['app_path']
-  code "rake db:schema:dump RAILS_ENV=production"
+  user "www-data"
+  group "www-data"
+
 end
 
 # Start unicorn (notifies doesnt seem to work)

@@ -111,4 +111,9 @@ rvm_shell "bundle install" do
   ruby_string node['redmine']['ruby']
   cwd node['redmine']['app_path']
   code "bundle install"
+
+  # FIXME: probably should run as www-data, but doing so causes an error:
+  #  Errno::EACCES: Permission denied - /root/.bundler
+  # user "www-data"
+  # group "www-data"
 end
