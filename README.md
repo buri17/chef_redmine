@@ -80,7 +80,7 @@ TODO
 * Figure out how to run 'bundle install' as www-data (and all other rvm_shell calls)
 * Test for redmine 2.1, and deal with the following:
   * Replace `rake generate_session_store` with `rake generate_secret_token`
-  * Gemfile that comes with redmine will not contain unicorn, rack, Dealing with future redmine versions: Gemfiles 
+  * Use Gemfile.local to install unicorn,rvm,mysql,... see http://www.redmine.org/projects/redmine/wiki/RedmineInstall#Additional-dependencies-Gemfilelocal
 * Remove unnecessary entries from Gemfile for redmine 1.2.1
 * Create Gemfile for redmine 1.3.1
 * Fix up unicorn_redmine init script to emit proper codes
