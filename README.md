@@ -40,10 +40,10 @@ default['redmine'] = {
     'access_log' => "unicorn.access.log"
     },
   'db' => {
-    'db_host' => "localhost",
-    'db_user' => "redmine",
     'db_name' => "redmine_production",
-    'db_pass' => "!redMine",
+    'db_user' => "redmine",
+    'db_pass' => "redMinePass",
+    'db_host' => "localhost",
     'load_sql_file' => nil
   },
   'ruby' => "ruby-1.8.7-p330@redmine",
