@@ -6,6 +6,8 @@ Description
 
 Chef cookbook for deploying redmine with unicorn and nginx. Uses rvm and bundler for Ruby and gem management.
 
+[![Build Status](https://secure.travis-ci.org/dergachev/chef_redmine.png)](http://travis-ci.org/dergachev/chef_redmine)
+
 Requirements
 ============
 
