@@ -93,7 +93,7 @@ end
 rvm_shell "rake_task: db:migrate and other initialization" do
 
   rm_1x_file = "#{node['redmine']['app_path']}/lib/tasks/migrate_plugins.rake" 
-  plugin_rake_task = File.exists?(rm_1x_file) ? "db:migrate:plugins" : "redmine:plugins:migrate"
+  PLUGIN_RAKE_TASK = File.exists?(rm_1x_file) ? "db:migrate:plugins" : "redmine:plugins:migrate"
 
   ruby_string node['redmine']['ruby']
   cwd node['redmine']['app_path']
@@ -102,7 +102,7 @@ rvm_shell "rake_task: db:migrate and other initialization" do
 
   code <<-EOH
     rake db:migrate RAILS_ENV=production
-    rake #{plugin_rake_task} RAILS_ENV=production
+    rake #{PLUGIN_RAKE_TASK} RAILS_ENV=production
     rake redmine:load_default_data REDMINE_LANG=en RAILS_ENV=production
   EOH
 
