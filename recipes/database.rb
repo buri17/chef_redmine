@@ -17,6 +17,7 @@
 #
 
 # see https://github.com/opscode-cookbooks/mysql#usage
+include_recipe "openssl"
 include_recipe "mysql::server"
 include_recipe "mysql::ruby"
 
@@ -57,8 +58,7 @@ template "#{node['redmine']['app_path']}/config/database.yml" do
 end
 
 # http://www.redmine.org/projects/redmine/wiki/RedmineInstall step 5
-rvm_shell "rake_task:generate_session_store" do
-  ruby_string node['redmine']['ruby']
+bash "rake_task:generate_session_store" do
   cwd node['redmine']['app_path']
 
   #TODO: for redmine 2.x it should be `rake generate_secret_token`
@@ -90,12 +90,11 @@ end
 # run plugin migrations, http://www.redmine.org/projects/redmine/wiki/Plugins
 # http://www.redmine.org/projects/redmine/wiki/RedmineInstall step 7 - default roles, trackers
 # creates default super-user 'admin' with password 'admin'
-rvm_shell "rake_task: db:migrate and other initialization" do
+bash "rake_task: db:migrate and other initialization" do
 
   rm_1x_file = "#{node['redmine']['app_path']}/lib/tasks/migrate_plugins.rake" 
   PLUGIN_RAKE_TASK = File.exists?(rm_1x_file) ? "db:migrate:plugins" : "redmine:plugins:migrate"
 
-  ruby_string node['redmine']['ruby']
   cwd node['redmine']['app_path']
   user "www-data"
   group "www-data"
@@ -112,10 +111,9 @@ end
 # (Re-)generates db/schema.rb, which should have been created by db:migrate.
 # Only necessary if DB was loaded from SQL file, or after db:migrate:plugins due to bug
 # See http://www.redmine.org/issues/11299
-rvm_shell "rake_task:db:schema:dump" do
+bash "rake_task:db:schema:dump" do
   code "rake db:schema:dump RAILS_ENV=production"
 
-  ruby_string node['redmine']['ruby']
   cwd node['redmine']['app_path']
   user "www-data"
   group "www-data"

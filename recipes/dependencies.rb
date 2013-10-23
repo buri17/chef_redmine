@@ -16,8 +16,18 @@
 # limitations under the License.
 #
 
-# Install rvm
-include_recipe "rvm::system_install"
+package "git"
 
-# Installing 1.8.7 ruby and creating gemset
-rvm_environment node['redmine']['ruby']
+# Installing ruby 1.8.7.
+# NOTE: under gusteau and vagrant, we faced this issue in using system ruby:
+#   https://github.com/locomote/gusteau/issues/40
+package "ruby"
+package "rubygems"
+
+# workaround for http://www.redmine.org/issues/8325 (Redmine 1.2.1 requires rails 2.3.11 requires gem <= 1.6
+# but no ubuntu rubygems package gives 1.8
+execute "export REALLY_GEM_UPDATE_SYSTEM=1; gem update --system 1.6.2" do
+  not_if "gem -v && gem -v | grep 1.6"
+end
+
+gem_package "bundler"

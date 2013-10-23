@@ -44,25 +44,6 @@ bash "fix redmine perms" do
   code "chown -R www-data:www-data #{node['redmine']['app_path']}"
 end
 
-# Deploying rvm env autoswitcher to app_path
-template "#{node['redmine']['app_path']}/.rvmrc" do
-  source ".rvmrc.erb"
-  owner "www-data"
-  group "www-data"
-  mode "0755" # This was missing, probably
-end
-
-# Custom force-trust for redmine.app_path/.rvmrc
-script "trust_rvmrc" do 
-  # FIXME: this silently fails unless .rvmrc is 755
-  ## error on `cd /opt/redmine`:  Do you wish to trust this .rvmrc file? (/opt/redmine/.rvmrc)
-  interpreter "bash"
-  code <<-EOF
-  source /etc/profile
-  rvm rvmrc trust #{node['redmine']['app_path']}
-  EOF
-end
-
 # Unicorn w/rvm for redmine init-script
 template "/etc/init.d/unicorn_redmine" do
   source "unicorn_init_script.erb"
@@ -107,8 +88,7 @@ cookbook_file "#{node['redmine']['app_path']}/Gemfile" do
 end
 
 # Run 'bundle install' to install gems based on Gemfile
-rvm_shell "bundle install" do
-  ruby_string node['redmine']['ruby']
+bash "bundle install" do
   cwd node['redmine']['app_path']
   code "bundle install"
 

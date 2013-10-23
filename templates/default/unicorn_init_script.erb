@@ -13,25 +13,18 @@
 set -u
 set -e
 
-# adds rvm to root PATH is incorrect on first chef-solo run
-source "/usr/local/rvm/environments/<%=node['redmine']['ruby']%>"
-#TODO: consider replacing with "rvm wrapper"
-
 declare -r REDMINE_RUBY="<%=node['redmine']['ruby']%>"
 declare -r APP_NAME="redmine-<%=node['redmine']['release_tag']%>"
 declare -r APP_ROOT="<%=node['redmine']['app_path']%>"
 declare -r PID="$APP_ROOT<%=node['redmine']['unicorn_conf']['pid']%>"
 declare -r ENV=production
-declare -r GEM_HOME="/usr/local/rvm/gems/$REDMINE_RUBY"
 declare -r UNICORN_OPTS="-D -E $ENV -c $APP_ROOT/config/unicorn.rb"
 declare -r oldpid="$PID.oldbin"
-
-export GEM_HOME
 
 cd $APP_ROOT || exit 1
 
 run () {
-  cd $APP_ROOT && $GEM_HOME/bin/unicorn_rails $UNICORN_OPTS
+  cd $APP_ROOT && unicorn_rails $UNICORN_OPTS
 }
 
 sig () {
