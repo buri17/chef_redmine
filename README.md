@@ -4,7 +4,7 @@ Redmine Cookbook
 Description
 -----------
 
-Chef cookbook for deploying redmine with unicorn and nginx. Uses rvm and bundler for Ruby and gem management.
+Chef cookbook for deploying redmine with unicorn and nginx. Uses bundler for Ruby and gem management.
 
 [![Build Status](https://secure.travis-ci.org/dergachev/chef_redmine.png)](http://travis-ci.org/dergachev/chef_redmine)
 
@@ -19,7 +19,7 @@ As of this writing, this cookbook was tested for installing redmine 1.2 and 1.3 
 Recipes
 =======
 
-* redmine::dependencies - installs RVM and specified version of Ruby
+* redmine::dependencies - installs ruby from ubuntu packages
 * redmine::default - clones redmine from specified git repository, installs dependent gems using bundler (providing a Gemfile for Redmine versions prior to 1.4), installs unicorn to serve the rails application.
 * redmine::database - installs config/database.yml, creates mysql user and database, initializes database from specified SQL dump. If no SQL dump file is provided, the DB will be initialized via appropriate rake task (db:migrate, db:migrate:plugins, redmine:load_default_data).
 * redmine::nginx - installs nginx, configures vhost for redmine that proxies to unicorn.
@@ -31,7 +31,7 @@ The following default attributes exposed by this cookbook:
 
 ```ruby
 default['redmine'] = {
-  'git_revision' => "1.3.1",
+  'git_revision' => "1.2.1",
   'git_repository' => "https://github.com/redmine/redmine",
   'app_path' => "/opt/redmine/",
   'app_server_name' => 'redmine',
@@ -51,7 +51,7 @@ default['redmine'] = {
   'ruby' => "ruby-1.8.7-p330@redmine",
   'rmagick' => "disabled",
   'nginx_filenames' => ["redmine.conf"],
-  'nginx_listen' => ["*:80 default_server"]
+  'nginx_listen' => "*:80 default_server"
 }
 ```
 
@@ -63,9 +63,7 @@ Note the following caveats:
 * If overriding node['redmine']['git_revision'] to a different version of
   redmine than the we tested, please review all the installation steps to make
   sure they're appropriate.
-* Note that `node['redmine']['db']['db_user']` is the mysql user that will be
-  created by the recipe redmine::database, which relies on the attribute
-  node['mysql']['server_root_password'] being set correctly.
+* node['mysql']['server_root_password'] and friends must be set approriately
 * `node['redmine']['db']['load_sql_file']`:  absolute path to redmine mysql
   dump file that should be loaded, eg `/vagrant/redmine_prod.sql`. Supports
   gzipped files. This file should be installed prior to the execution of
@@ -79,7 +77,6 @@ Coming soon.
 TODO
 ====
 
-* Figure out how to run 'bundle install' as www-data (and all other rvm_shell calls)
 * Test for redmine 2.1, and deal with the following:
   * Replace `rake generate_session_store` with `rake generate_secret_token`
   * Use Gemfile.local to install unicorn,rvm,mysql,... see http://www.redmine.org/projects/redmine/wiki/RedmineInstall#Additional-dependencies-Gemfilelocal
