@@ -28,11 +28,11 @@ end
 # Enable redmine vhost
 link "/etc/nginx/sites-enabled/redmine.conf" do
   to "/etc/nginx/sites-available/redmine.conf"
-  notifies :reload, resources(:service => "nginx")
+  notifies :reload, "service[nginx]"
 end
 
 # Disable default vhost (allows redmine vhost to serve http://localhost)
 link "/etc/nginx/sites-enabled/default" do
   action :delete
-  notifies :reload, resources(:service => "nginx")
+  notifies :reload, "service[nginx]"
 end

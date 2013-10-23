@@ -1,3 +1,5 @@
+name 'redmine'
+
 maintainer       "Alex Dergachev"
 maintainer_email "alex@evolvingweb.ca"
 license          "Apache 2.0"

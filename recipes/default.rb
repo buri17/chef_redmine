@@ -52,7 +52,7 @@ template "/etc/init.d/unicorn_redmine" do
   mode   "0755" # fixed permissions
 
   # see http://stackoverflow.com/questions/9938314/chef-how-to-run-a-template-that-creates-a-init-d-script-before-the-service-is-c/9941971#9941971
-  notifies :enable, resources(:service => "unicorn_redmine")
+  notifies :enable, "service[unicorn_redmine]"
 end
 
 # Redmine configuration for SCM and mailing

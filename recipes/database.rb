@@ -17,7 +17,6 @@
 #
 
 # see https://github.com/opscode-cookbooks/mysql#usage
-include_recipe "openssl"
 include_recipe "mysql::server"
 include_recipe "mysql::ruby"
 
@@ -105,7 +104,7 @@ bash "rake_task: db:migrate and other initialization" do
     rake redmine:load_default_data REDMINE_LANG=en RAILS_ENV=production
   EOH
 
-  only_if "#{mysql_empty_check_cmd}"
+  only_if mysql_empty_check_cmd
 end
 
 # (Re-)generates db/schema.rb, which should have been created by db:migrate.
