@@ -79,9 +79,24 @@ directory "#{node['redmine']['app_path']}/public/plugin_assets" do
 end
 
 # Install a redmine-specific Gemfile
-cookbook_file "#{node['redmine']['app_path']}/Gemfile" do
+template "#{node['redmine']['app_path']}/Gemfile" do
+  action :create_if_missing  # redmine >= 1.4 comes with own Gemfile
+  source "Gemfile.erb"
+  variables({
+    :rails_version => node['redmine']['rails_version']
+  })
+  owner "www-data"
+  group "www-data"
+  mode "0755"
+end
+
+# Add our custom gems to Gemfile.local, which redmine's Gemfile supports
+template "#{node['redmine']['app_path']}/Gemfile.local" do
   action :create_if_missing
-  source "Gemfile-redmine-1.2.1"
+  source "Gemfile.local.erb"
+  variables({
+    :rails_version => node['redmine']['rails_version']
+  })
   owner "www-data"
   group "www-data"
   mode "0755"

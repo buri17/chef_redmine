@@ -17,7 +17,7 @@
 #
 
 default['redmine'] = {
-  'git_revision' => "1.2.1",
+  'git_revision' => "1.3.3",
   'git_repository' => "https://github.com/redmine/redmine",
   'app_path' => "/opt/redmine/",
   'app_server_name' => 'redmine',
@@ -34,8 +34,11 @@ default['redmine'] = {
     'db_host' => "localhost",
     'load_sql_file' => nil
   },
-  'ruby' => "ruby-1.8.7-p330@redmine",
   'rmagick' => "disabled",
   'nginx_filenames' => ["redmine.conf"],
   'nginx_listen' => "*:80 default_server"
 }
+
+# redmine 1.2.x requires rails 2.3.11, redmine 1.3.x requires rails 2.3.14
+# redmine 1.4+ comes with own Gemfile
+default['redmine']['rails_version'] = node['redmine']['git_revision'].match(/^1.3/) ? '2.3.14' : '2.3.11'

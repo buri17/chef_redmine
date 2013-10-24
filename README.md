@@ -14,7 +14,7 @@ Requirements
 Cookbooks: mysql, nginx, database, rvm; as well as all their dependencies.
 If agent forwarding is requried for cloning from a private git repo, consider using the cookbook root_ssh_agent.
 
-As of this writing, this cookbook was tested for installing redmine 1.2 and 1.3 onto Ubuntu 12.04 system, using Vagrant and librarian-chef.
+As of this writing, this cookbook was tested for installing redmine 1.2 and 1.3 onto Ubuntu 12.04 system, using Vagrant and librarian-chef, and gusteau. For details, see [@dergachev/vagrant_redmine](https://github.com/dergachev/vagrant_redmine)
 
 Recipes
 =======
@@ -79,7 +79,6 @@ TODO
 
 * Test for redmine 2.1, and deal with the following:
   * Replace `rake generate_session_store` with `rake generate_secret_token`
-  * Use Gemfile.local to install unicorn,rvm,mysql,... see http://www.redmine.org/projects/redmine/wiki/RedmineInstall#Additional-dependencies-Gemfilelocal
 * Remove unnecessary entries from Gemfile for redmine 1.2.1
 * Create Gemfile for redmine 1.3.1
 * Fix up unicorn_redmine init script to emit proper codes
