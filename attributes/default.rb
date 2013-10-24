@@ -22,13 +22,14 @@ default['redmine'] = {
   'app_path' => "/opt/redmine/",
   'app_server_name' => 'redmine',
   'unicorn_conf' => {
-    'pid' => "/tmp/pids/unicorn.pid", 
+    'pid' => "/tmp/pids/unicorn.pid",
     'sock' => "/tmp/sockets/unicorn.sock",
     'error_log' => "unicorn.error.log",
     'access_log' => "unicorn.access.log"
     },
   'db' => {
-    'db_name' => "redmine_production",
+    'rails_env' => "development",
+    'db_name' => "redmine",
     'db_user' => "redmine",
     'db_pass' => "redMinePass",
     'db_host' => "localhost",
@@ -39,6 +40,5 @@ default['redmine'] = {
   'nginx_listen' => "*:80 default_server"
 }
 
-# redmine 1.2.x requires rails 2.3.11, redmine 1.3.x requires rails 2.3.14
-# redmine 1.4+ comes with own Gemfile
+# redmine 1.2.x requires rails 2.3.11, 1.3.x requires rails 2.3.14, 1.4+ comes with own Gemfiles
 default['redmine']['rails_version'] = node['redmine']['git_revision'].match(/^1.3/) ? '2.3.14' : '2.3.11'

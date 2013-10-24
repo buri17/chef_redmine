@@ -17,7 +17,7 @@ declare -r REDMINE_RUBY="<%=node['redmine']['ruby']%>"
 declare -r APP_NAME="redmine-<%=node['redmine']['release_tag']%>"
 declare -r APP_ROOT="<%=node['redmine']['app_path']%>"
 declare -r PID="$APP_ROOT<%=node['redmine']['unicorn_conf']['pid']%>"
-declare -r ENV=production
+declare -r ENV="<%=node['redmine']['db']['rails_env']%>"
 declare -r UNICORN_OPTS="-D -E $ENV -c $APP_ROOT/config/unicorn.rb"
 declare -r oldpid="$PID.oldbin"
 

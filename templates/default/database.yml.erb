@@ -1,6 +1,6 @@
 # This file is managed by Chef recipe[redmine::database]
 
-production:
+<%= node['redmine']['db']['rails_env'] %>:
   adapter: mysql
   encoding: utf8
   database: <%= node['redmine']['db']['db_name'] %>

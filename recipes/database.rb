@@ -94,15 +94,16 @@ bash "rake_task: db:migrate and other initialization" do
   rm_1x_file = "#{node['redmine']['app_path']}/lib/tasks/migrate_plugins.rake" 
   PLUGIN_RAKE_TASK = File.exists?(rm_1x_file) ? "db:migrate:plugins" : "redmine:plugins:migrate"
 
+  code <<-EOH
+    rake db:migrate
+    rake #{PLUGIN_RAKE_TASK}
+    rake redmine:load_default_data REDMINE_LANG=en
+  EOH
+
+  environment 'RAILS_ENV' => node['redmine']['db']['rails_env']
   cwd node['redmine']['app_path']
   user "www-data"
   group "www-data"
-
-  code <<-EOH
-    rake db:migrate RAILS_ENV=production
-    rake #{PLUGIN_RAKE_TASK} RAILS_ENV=production
-    rake redmine:load_default_data REDMINE_LANG=en RAILS_ENV=production
-  EOH
 
   only_if mysql_empty_check_cmd
 end
@@ -111,7 +112,8 @@ end
 # Only necessary if DB was loaded from SQL file, or after db:migrate:plugins due to bug
 # See http://www.redmine.org/issues/11299
 bash "rake_task:db:schema:dump" do
-  code "rake db:schema:dump RAILS_ENV=production"
+  code "rake db:schema:dump"
+  environment 'RAILS_ENV' => node['redmine']['db']['rails_env']
 
   cwd node['redmine']['app_path']
   user "www-data"

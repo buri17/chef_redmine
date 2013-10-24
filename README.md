@@ -31,7 +31,7 @@ The following default attributes exposed by this cookbook:
 
 ```ruby
 default['redmine'] = {
-  'git_revision' => "1.2.1",
+  'git_revision' => "1.3.3",
   'git_repository' => "https://github.com/redmine/redmine",
   'app_path' => "/opt/redmine/",
   'app_server_name' => 'redmine',
@@ -42,17 +42,20 @@ default['redmine'] = {
     'access_log' => "unicorn.access.log"
     },
   'db' => {
-    'db_name' => "redmine_production",
+    'rails_env' => "development",
+    'db_name' => "redmine",
     'db_user' => "redmine",
     'db_pass' => "redMinePass",
     'db_host' => "localhost",
     'load_sql_file' => nil
   },
-  'ruby' => "ruby-1.8.7-p330@redmine",
   'rmagick' => "disabled",
   'nginx_filenames' => ["redmine.conf"],
   'nginx_listen' => "*:80 default_server"
 }
+
+# redmine 1.2.x requires rails 2.3.11, 1.3.x requires rails 2.3.14, 1.4+ comes with own Gemfiles
+default['redmine']['rails_version'] = node['redmine']['git_revision'].match(/^1.3/) ? '2.3.14' : '2.3.11'
 ```
 
 Note the following caveats:
@@ -62,26 +65,17 @@ Note the following caveats:
   potentially via the `root_ssh_agent::ppid` recipe. 
 * If overriding node['redmine']['git_revision'] to a different version of
   redmine than the we tested, please review all the installation steps to make
-  sure they're appropriate.
+  sure they're appropriate. Particularly consider overriding node['redmine']['rails_version'].
 * node['mysql']['server_root_password'] and friends must be set approriately
 * `node['redmine']['db']['load_sql_file']`:  absolute path to redmine mysql
   dump file that should be loaded, eg `/vagrant/redmine_prod.sql`. Supports
   gzipped files. This file should be installed prior to the execution of
   redmine::database, perhaps in a Vagrant shared folder, or by another recipe.
 
-Installation and Usage
-======================
-
-Coming soon.
 
 TODO
 ====
 
 * Test for redmine 2.1, and deal with the following:
   * Replace `rake generate_session_store` with `rake generate_secret_token`
-* Remove unnecessary entries from Gemfile for redmine 1.2.1
-* Create Gemfile for redmine 1.3.1
 * Fix up unicorn_redmine init script to emit proper codes
-* Stop hardcoding RAILS_ENV=production everywhere
-
-
