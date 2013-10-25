@@ -98,9 +98,6 @@ end
 template "#{node['redmine']['app_path']}/Gemfile.local" do
   action :create_if_missing
   source "Gemfile.local.erb"
-  variables({
-    :rails_version => node['redmine']['rails_version']
-  })
   owner "www-data"
   group "www-data"
   mode "0755"
