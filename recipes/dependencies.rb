@@ -24,6 +24,7 @@ package "git"
 package "ruby"
 package "rubygems"
 
+# TODO: save 10s by only downgrading if necessary (redmine 1.x or something, not sure)
 # workaround for http://www.redmine.org/issues/8325 (Redmine 1.2.1 requires rails 2.3.11 requires gem <= 1.6
 # but no ubuntu rubygems package gives 1.8
 execute "export REALLY_GEM_UPDATE_SYSTEM=1; gem update --system 1.6.2" do
@@ -31,3 +32,16 @@ execute "export REALLY_GEM_UPDATE_SYSTEM=1; gem update --system 1.6.2" do
 end
 
 gem_package "bundler"
+
+# TODO: save 30s (cached, otherwise much longer) by only installing for redmine 2.x
+
+# Installing rmagick (2.13.2), Gem::Installer::ExtensionBuildError:
+# ERROR: Failed to build gem native extension. Can't install RMagick 2.13.2. Can't find Magick-config
+# (Only comes up with redmine 2.3.3)
+package "libmagickwand-dev"
+
+# Installing nokogiri (1.5.10) Gem::Installer::ExtensionBuildError:
+# ERROR: Failed to build gem native extension. libxml2 is missing.
+# (Only comes up with redmine 2.3.3)
+package "libxslt-dev"
+package "libxml2-dev"

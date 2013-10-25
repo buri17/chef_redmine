@@ -8,13 +8,10 @@ Chef cookbook for deploying redmine with unicorn and nginx. Uses bundler for Rub
 
 [![Build Status](https://secure.travis-ci.org/dergachev/chef_redmine.png)](http://travis-ci.org/dergachev/chef_redmine)
 
-Requirements
-============
-
-Cookbooks: mysql, nginx, database, rvm; as well as all their dependencies.
-If agent forwarding is requried for cloning from a private git repo, consider using the cookbook root_ssh_agent.
-
-As of this writing, this cookbook was tested for installing redmine 1.2 and 1.3 onto Ubuntu 12.04 system, using Vagrant and librarian-chef, and gusteau. For details, see [@dergachev/vagrant_redmine](https://github.com/dergachev/vagrant_redmine)
+As of this writing, this cookbook was tested for installing redmine 1.2.1 and
+1.3.3, and 2.3.3 onto Ubuntu 12.04 system, using Vagrant and librarian-chef,
+and gusteau. For details, see
+[@dergachev/vagrant_redmine](https://github.com/dergachev/vagrant_redmine)
 
 Recipes
 =======
@@ -31,7 +28,7 @@ The following default attributes exposed by this cookbook:
 
 ```ruby
 default['redmine'] = {
-  'git_revision' => "1.3.3",
+  'git_revision' => "2.3.3",
   'git_repository' => "https://github.com/redmine/redmine",
   'app_path' => "/opt/redmine/",
   'app_server_name' => 'redmine',
@@ -71,11 +68,3 @@ Note the following caveats:
   dump file that should be loaded, eg `/vagrant/redmine_prod.sql`. Supports
   gzipped files. This file should be installed prior to the execution of
   redmine::database, perhaps in a Vagrant shared folder, or by another recipe.
-
-
-TODO
-====
-
-* Test for redmine 2.1, and deal with the following:
-  * Replace `rake generate_session_store` with `rake generate_secret_token`
-* Fix up unicorn_redmine init script to emit proper codes

@@ -17,7 +17,7 @@
 #
 
 default['redmine'] = {
-  'git_revision' => "1.3.3",
+  'git_revision' => "2.3.3",
   'git_repository' => "https://github.com/redmine/redmine",
   'app_path' => "/opt/redmine/",
   'app_server_name' => 'redmine',

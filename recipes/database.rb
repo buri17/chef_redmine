@@ -20,6 +20,9 @@
 include_recipe "mysql::server"
 include_recipe "mysql::ruby"
 
+# NOTE: ./config/database.yml is installed by recipe[redmine::default] as its a
+# pre-req for bundle install. See https://github.com/redmine/redmine/blob/master/Gemfile#L41
+
 mysql_root_connection_info = {
   :host => "localhost",
   :username => 'root',
@@ -48,21 +51,12 @@ mysql_database_user node['redmine']['db']['db_user'] do
   connection      mysql_root_connection_info
 end
 
-# Redmine database configuration
-template "#{node['redmine']['app_path']}/config/database.yml" do
-  source "database.yml.erb"
-  owner "www-data"
-  group "www-data"
-  mode  "0600" #FIXME: are these correct?
-end
-
 # http://www.redmine.org/projects/redmine/wiki/RedmineInstall step 5
 bash "rake_task:generate_session_store" do
   cwd node['redmine']['app_path']
 
-  #TODO: for redmine 2.x it should be `rake generate_secret_token`
-  # see lib/tasks/initializers.rake
-  code "rake generate_session_store"
+  # redmine 1.x requires 'generate_session_store', while 2.x requires 'generate_secret_token'
+  code "rake -T | grep 'rake generate_session_store' && rake generate_session_store || rake generate_secret_token"
   user "www-data"
   group "www-data"
 end

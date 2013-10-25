@@ -53,6 +53,8 @@ template "/etc/init.d/unicorn_redmine" do
 
   # see http://stackoverflow.com/questions/9938314/chef-how-to-run-a-template-that-creates-a-init-d-script-before-the-service-is-c/9941971#9941971
   notifies :enable, "service[unicorn_redmine]"
+  notifies :start, "service[unicorn_redmine]"
+  notifies :restart, "service[unicorn_redmine]"
 end
 
 # Redmine configuration for SCM and mailing
@@ -69,6 +71,8 @@ template "#{node['redmine']['app_path']}/config/unicorn.rb" do
   owner "www-data"
   group "www-data"
   mode  "0644"
+
+  notifies :restart, "service[unicorn_redmine]"
 end
 
 # fix ownership for public/plugin_assets due to deployment order
@@ -102,13 +106,22 @@ template "#{node['redmine']['app_path']}/Gemfile.local" do
   mode "0755"
 end
 
-# Run 'bundle install' to install gems based on Gemfile
-bash "bundle install" do
-  cwd node['redmine']['app_path']
-  code "bundle install"
+# Redmine database configuration; must be in place before 'bundle install'
+# See https://github.com/redmine/redmine/blob/master/Gemfile#L41
+template "#{node['redmine']['app_path']}/config/database.yml" do
+  source "database.yml.erb"
+  owner "www-data"
+  group "www-data"
+  mode  "0600" #FIXME: are these correct?
+end
 
-  # FIXME: probably should run as www-data, but doing so causes an error:
-  #  Errno::EACCES: Permission denied - /root/.bundler
-  # user "www-data"
-  # group "www-data"
+
+bash "bundle install" do
+  # NOTE: '--without test' is a workaround for this error:
+  #  An error occurred while installing rubyzip (1.0.0), and Bundler cannot continue.
+  #  Make sure that `gem install rubyzip -v '1.0.0'` succeeds before bundling.
+  # rubyzip is required by selenium, which is in the test Gem group
+  code "bundle install --without test"
+
+  cwd node['redmine']['app_path']
 end
