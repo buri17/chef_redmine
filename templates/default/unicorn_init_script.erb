@@ -20,11 +20,12 @@ declare -r PID="$APP_ROOT<%=node['redmine']['unicorn_conf']['pid']%>"
 declare -r ENV="<%=node['redmine']['db']['rails_env']%>"
 declare -r UNICORN_OPTS="-D -E $ENV -c $APP_ROOT/config/unicorn.rb"
 declare -r oldpid="$PID.oldbin"
+declare -r USER="www-data"
 
 cd $APP_ROOT || exit 1
 
 run () {
-  cd $APP_ROOT && unicorn_rails $UNICORN_OPTS
+  su -c "cd $APP_ROOT && unicorn_rails $UNICORN_OPTS" $USER
 }
 
 sig () {
