@@ -115,7 +115,7 @@ bash "rake_task:db:schema:dump" do
 
 end
 
-# Start unicorn (notifies doesnt seem to work)
+# Start unicorn (must happen after mysql is setup)
 service "unicorn_redmine" do
-  action :start
+  action [:enable, :start]
 end

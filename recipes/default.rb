@@ -16,13 +16,6 @@
 # limitations under the License.
 #
 
-# definition of /etc/init.d/unicorn_redmine
-service "unicorn_redmine" do
-  # required because the init script error codes are wrong
-  supports :status => false
-  action :nothing
-end
-
 # Ensure app-directory is present and have right ownership
 directory node['redmine']['app_path'] do
   action :create
@@ -52,9 +45,7 @@ template "/etc/init.d/unicorn_redmine" do
   mode   "0755" # fixed permissions
 
   # see http://stackoverflow.com/questions/9938314/chef-how-to-run-a-template-that-creates-a-init-d-script-before-the-service-is-c/9941971#9941971
-  notifies :enable, "service[unicorn_redmine]"
-  notifies :start, "service[unicorn_redmine]"
-  notifies :restart, "service[unicorn_redmine]"
+  notifies :reload, "service[unicorn_redmine]"
 end
 
 # Redmine configuration for SCM and mailing
@@ -63,6 +54,7 @@ template "#{node['redmine']['app_path']}/config/configuration.yml" do
   owner "www-data"
   group "www-data"
   mode  "0644"
+  notifies :reload, "service[unicorn_redmine]"
 end
 
 # Redmine unicorn configuration
@@ -72,7 +64,7 @@ template "#{node['redmine']['app_path']}/config/unicorn.rb" do
   group "www-data"
   mode  "0644"
 
-  notifies :restart, "service[unicorn_redmine]"
+  notifies :reload, "service[unicorn_redmine]"
 end
 
 # fix ownership for public/plugin_assets due to deployment order
@@ -122,3 +114,4 @@ bash "bundle install" do
 
   cwd node['redmine']['app_path']
 end
+
