@@ -33,7 +33,7 @@ cd $APP_ROOT || exit 1
 
 run () {
 # ensures that master process is also www-data, not root
-  su -c "cd $APP_ROOT && unicorn_rails $UNICORN_OPTS" $USER
+  su -c "cd $APP_ROOT && bundle exec unicorn_rails $UNICORN_OPTS" $USER
 }
 
 sig () {
